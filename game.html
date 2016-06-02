@@ -16,7 +16,7 @@ var canvasContext;
 var paddle1Y = 250;
 var paddle2Y = 250;
 var paddle2SpeedY;
-const PADDLE_HEIGHT = 200;
+var PADDLE_HEIGHT = 200;
 const PADDLE_THICK = 10;
 
 //ball
@@ -53,6 +53,7 @@ function handleMouseClick(evt){
   return;
 }
 function ballReset(gameResult){
+  PADDLE_HEIGHT=200;
   if(player1Score>=WINNING_SCORE || player2Score>=WINNING_SCORE){
     player1Score = 0;
     player2Score = 0;
@@ -81,7 +82,6 @@ function ballReset(gameResult){
     console.log('startDefault');
     break;
   }
-
 }
 function computerMovement(){
   var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2);
@@ -157,6 +157,8 @@ window.onload = function(){
     timePlayed+=1;
     paddle2SpeedY+=6;
     console.log(timePlayed);
+    //get harder
+    PADDLE_HEIGHT --;
   }, 1000);
   canvas.addEventListener('mousedown', handleMouseClick)
   canvas.addEventListener('mousemove',
