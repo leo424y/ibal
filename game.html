@@ -8,6 +8,10 @@
 </head>
 <script>
 
+//audio
+var audio = new Audio('b1.wav');
+var audio1 = new Audio('b2.wav');
+
 //canvas
 var canvas;
 var canvasContext;
@@ -16,7 +20,7 @@ var canvasContext;
 var paddle1Y = 250;
 var paddle2Y = 250;
 var paddle2SpeedY;
-const PADDLE_HEIGHT = 200;
+var PADDLE_HEIGHT = 200;
 const PADDLE_THICK = 10;
 
 //ball
@@ -66,6 +70,7 @@ function handleMouseClick(evt){
   return;
 }
 function ballReset(gameResult){
+  PADDLE_HEIGHT = 200;
   if(player1Score>=WINNING_SCORE || player2Score>=WINNING_SCORE){
     player1Score = 0;
     player2Score = 0;
@@ -111,7 +116,9 @@ function moveEverything(){
   ballX = ballX + ballSpeedX;
   ballY = ballY + ballSpeedY;
   if(ballX > canvas.width){
+    //hit
     if(ballY > paddle2Y && ballY < paddle2Y + PADDLE_HEIGHT){
+      audio.play();
       ballSpeedX = -ballSpeedX;
       var deltaY = ballY - (paddle2Y + PADDLE_HEIGHT/2);
       ballSpeedY = deltaY * 0.1;
@@ -123,7 +130,9 @@ function moveEverything(){
     }
   }
   if (ballX < 0) {
+    //hit
     if(ballY > paddle1Y && ballY < paddle1Y + PADDLE_HEIGHT){
+      audio.play();
       ballSpeedX = -ballSpeedX;
       var deltaY = ballY - (paddle1Y + PADDLE_HEIGHT/2);
       ballSpeedY = deltaY * 0.1;
@@ -133,6 +142,7 @@ function moveEverything(){
     }
   }
   if(ballY > canvas.height || ballY < 0){
+    audio1.play();
     ballSpeedY = -ballSpeedY;
   }
 }
@@ -157,7 +167,7 @@ function colorRect(leftX, topY, width, height, drawColor){
 
 window.onload = function(){
   console.log(window.innerWidth, window.innerHeight);
-  canvas = document.getElementById('gameCanvas'),spirit, startX, startY;
+  canvas = document.getElementById('gameCanvas');
   gameCanvas.width = window.innerWidth;
   gameCanvas.height = window.innerHeight;
   canvasContext = canvas.getContext('2d');
@@ -170,6 +180,7 @@ window.onload = function(){
     timePlayed+=1;
     paddle2SpeedY+=6;
     console.log(timePlayed);
+    PADDLE_HEIGHT--;
   }, 1000);
   canvas.addEventListener('mousedown', handleMouseClick)
   canvas.addEventListener('mousemove',
