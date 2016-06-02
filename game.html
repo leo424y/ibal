@@ -8,6 +8,11 @@
 </head>
 <script>
 
+//audio
+var audio = new Audio('b1.wav');
+var audio1 = new Audio('b2.wav');
+var audio2 = new Audio('b3.wav');
+
 //canvas
 var canvas;
 var canvasContext;
@@ -16,12 +21,18 @@ var canvasContext;
 var paddle1Y = 250;
 var paddle2Y = 250;
 var paddle2SpeedY;
-const PADDLE_HEIGHT = 200;
+var PADDLE_HEIGHT = 200;
 const PADDLE_THICK = 10;
 
+//paddle2YSpeed
+var paddle2YSpeed = 10;
+
 //ball
-var ballX = 50;
-var ballY = 150;
+var ballSize;
+var ballX;
+var ballY;
+
+//ballSpeed
 var ballSpeedX;
 var ballSpeedY;
 
@@ -29,30 +40,25 @@ var ballSpeedY;
 var showingWinScreen = false;
 var player1Score = 0;
 var player2Score = 0;
-const WINNING_SCORE = 3;
+var hitScore = 0;
+const WINNING_SCORE = 0;
 
 //time
 var framesPerSecond = 60;
 var timePlayed = 0;
-function touchStart(event) {
-         event.preventDefault();
-         if (spirit ||! event.touches.length) return;
-         var touch = event.touches[0];
-         startX = touch.pageX;
-         startY = touch.pageY;
-         spirit = document.createElement('div');
-         spirit.className = 'spirit';
-         spirit.style.left = startX;
-         spirit.style.top = startY;
-         canvas.appendChild(spirit);
-}
-
 
 function calculateMousePos(evt){
   var rect = canvas.getBoundingClientRect();
   var root = document.documentElement;
   var mouseX= evt.clientX - rect.left - root.scrollLeft;
   var mouseY= evt.clientY - rect.top - root.scrollTop;
+
+  if( ballX < (mouseX + 20) && ballX > (mouseX - 20) && ballY < (mouseY + 20) && ballY > (mouseY - 20) ){
+    audio2.play();
+    ballSpeedX+=2;
+    ballSpeedY+=2;
+
+  }
 
   return{
     x:mouseX,
@@ -65,11 +71,27 @@ function handleMouseClick(evt){
   }
   return;
 }
+
+
+function ballHitPaddle(){
+  audio.play();
+  hitScore++;
+  ballSpeedX++;
+  ballSpeedY++;
+  ballSize-=0.1;
+  paddle2YSpeed-=0.01;
+}
 function ballReset(gameResult){
+  ballSize = 20;
+  ballX = 50;
+  ballY = 150;
+  PADDLE_HEIGHT = 200;
+  hitScore = 0;
   if(player1Score>=WINNING_SCORE || player2Score>=WINNING_SCORE){
     player1Score = 0;
     player2Score = 0;
     showingWinScreen = true;
+
   }
   timePlayed=0;
   ballX = canvas.width/2;
@@ -99,9 +121,9 @@ function ballReset(gameResult){
 function computerMovement(){
   var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2);
   if( paddle2YCenter < ballY - PADDLE_HEIGHT/3){
-    paddle2Y += 6;
+    paddle2Y += paddle2YSpeed;
   }else if( paddle2YCenter > ballY + PADDLE_HEIGHT/3){
-    paddle2Y -= 6;
+    paddle2Y -= paddle2YSpeed;
   }
 }
 function moveEverything(){
@@ -111,7 +133,9 @@ function moveEverything(){
   ballX = ballX + ballSpeedX;
   ballY = ballY + ballSpeedY;
   if(ballX > canvas.width){
+    //hit
     if(ballY > paddle2Y && ballY < paddle2Y + PADDLE_HEIGHT){
+      ballHitPaddle();
       ballSpeedX = -ballSpeedX;
       var deltaY = ballY - (paddle2Y + PADDLE_HEIGHT/2);
       ballSpeedY = deltaY * 0.1;
@@ -123,7 +147,9 @@ function moveEverything(){
     }
   }
   if (ballX < 0) {
+    //hit
     if(ballY > paddle1Y && ballY < paddle1Y + PADDLE_HEIGHT){
+      ballHitPaddle();
       ballSpeedX = -ballSpeedX;
       var deltaY = ballY - (paddle1Y + PADDLE_HEIGHT/2);
       ballSpeedY = deltaY * 0.1;
@@ -133,6 +159,7 @@ function moveEverything(){
     }
   }
   if(ballY > canvas.height || ballY < 0){
+    audio1.play();
     ballSpeedY = -ballSpeedY;
   }
 }
@@ -140,8 +167,9 @@ function drawEverything(){
   colorRect(0,0, canvas.width, canvas.height, 'black');
   colorRect(0 ,paddle1Y,10,PADDLE_HEIGHT,'yellow');
   colorRect(canvas.width - PADDLE_THICK ,paddle2Y,10,PADDLE_HEIGHT,'red');
-  colorCircle(ballX, ballY, 5 , 'white');
+  colorCircle(ballX, ballY, ballSize , 'white');
   canvasContext.fillText(timePlayed, window.innerWidth/2,window.innerHeight/2 );
+  canvasContext.fillText(hitScore, window.innerWidth/2,window.innerHeight/2.2 );
 }
 function colorCircle(centerX, centerY, radius, drawColor){
   canvasContext.fillStyle = drawColor;
@@ -157,7 +185,7 @@ function colorRect(leftX, topY, width, height, drawColor){
 
 window.onload = function(){
   console.log(window.innerWidth, window.innerHeight);
-  canvas = document.getElementById('gameCanvas'),spirit, startX, startY;
+  canvas = document.getElementById('gameCanvas');
   gameCanvas.width = window.innerWidth;
   gameCanvas.height = window.innerHeight;
   canvasContext = canvas.getContext('2d');
@@ -170,6 +198,7 @@ window.onload = function(){
     timePlayed+=1;
     paddle2SpeedY+=6;
     console.log(timePlayed);
+    PADDLE_HEIGHT--;
   }, 1000);
   canvas.addEventListener('mousedown', handleMouseClick)
   canvas.addEventListener('mousemove',
