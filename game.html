@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<script>
+var canvas;
+var canvasContext;
+var ballX = 50;
+var ballY = 150;
+var ballSpeedX;
+var ballSpeedY;
+
+var showingWinScreen = false;
+var player1Score = 0;
+var player2Score = 0;
+const WINNING_SCORE = 3;
+
+var paddle1Y = 250;
+var paddle2Y = 250;
+var paddle2SpeedY;
+const PADDLE_HEIGHT = 200;
+const PADDLE_THICK = 10;
+
+var framesPerSecond = 60;
+var timePlayed=0;
+
+function calculateMousePos(evt){
+  var rect = canvas.getBoundingClientRect();
+  var root = document.documentElement;
+  var mouseX= evt.clientX - rect.left - root.scrollLeft;
+  var mouseY= evt.clientY - rect.top - root.scrollTop;
+
+  return{
+    x:mouseX,
+    y:mouseY
+  };
+}
+
+function ballReset(gameResult){
+  if(player1Score>=WINNING_SCORE || player2Score>=WINNING_SCORE){
+    player1Score = 0;
+    player2Score = 0;
+    showingWinScreen = true;
+  }
+  timePlayed=0;
+  ballX = canvas.width/2;
+  ballY = canvas.height/2;
+  switch(gameResult){
+    case 'startLeft':
+    ballSpeedX = -10;
+    ballSpeedY = -8-(Math.floor(Math.random()*24)-12);
+    console.log(ballSpeedX, ballSpeedY);
+    console.log('startLeft');
+    break;
+    case 'startRight':
+    ballSpeedX = 10;
+    ballSpeedY = 8+(Math.floor(Math.random()*24)-12);
+    console.log(ballSpeedX, ballSpeedY);
+    console.log('startRight');
+    break;
+    default:
+    ballSpeedX = 10;
+    ballSpeedY = 10;
+    console.log(ballSpeedX, ballSpeedY);
+    console.log('startDefault');
+    break;
+  }
+  //(Math.floor(Math.random()*12)-6)*3;
+  //(Math.floor(Math.random()*12)-6)*3;
+
+}
+function handleMouseClick(evt){
+  if(showingWinScreen){
+    showingWinScreen = false;
+  }
+  return;
+}
+
+window.onload = function(){
+
+  canvas = document.getElementById('gameCanvas');
+  canvasContext = canvas.getContext('2d');
+
+  setInterval(function(){
+    moveEverything();
+    drawEverything();
+    computerMovement();
+  }, 1000/framesPerSecond);
+
+  setInterval(function(){
+    timePlayed+=1;
+    paddle2SpeedY+=6;
+    console.log(timePlayed);
+  }, 1000);
+  canvas.addEventListener('mousedown', handleMouseClick)
+  canvas.addEventListener('mousemove',
+  function(evt){
+    var mousePos = calculateMousePos(evt);
+    paddle1Y = mousePos.y - PADDLE_HEIGHT/2;
+    //paddle2Y = mousePos.y - PADDLE_HEIGHT/2;
+  }
+
+
+);
+ballReset();
+}
+function computerMovement(){
+  var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2);
+  if( paddle2YCenter < ballY - PADDLE_HEIGHT/3){
+    paddle2Y += 6;
+  }else if( paddle2YCenter > ballY + PADDLE_HEIGHT/3){
+    paddle2Y -= 6;
+  }
+}
+function moveEverything(){
+  if(showingWinScreen){
+    return;
+  }
+  ballX = ballX + ballSpeedX;
+  ballY = ballY + ballSpeedY;
+  if(ballX > canvas.width){
+    if(ballY > paddle2Y && ballY < paddle2Y + PADDLE_HEIGHT){
+      ballSpeedX = -ballSpeedX;
+      var deltaY = ballY - (paddle2Y + PADDLE_HEIGHT/2);
+      ballSpeedY = deltaY * 0.1;
+    }
+    else{
+      showingWinScreen == true;
+      ballReset('startLeft');
+      player1Score++;
+    }
+  }
+  if (ballX < 0) {
+    if(ballY > paddle1Y && ballY < paddle1Y + PADDLE_HEIGHT){
+      ballSpeedX = -ballSpeedX;
+      var deltaY = ballY - (paddle1Y + PADDLE_HEIGHT/2);
+      ballSpeedY = deltaY * 0.1;
+    }else{
+      ballReset('startRight');
+      player2Score++;
+    }
+  }
+  if(ballY > canvas.height || ballY < 0){
+    ballSpeedY = -ballSpeedY;
+  }
+}
+function drawEverything(){
+  colorRect(0,0, canvas.width, canvas.height, 'black');
+  colorRect(0 ,paddle1Y,10,PADDLE_HEIGHT,'blue');
+  colorRect(canvas.width - PADDLE_THICK ,paddle2Y,10,PADDLE_HEIGHT,'red');
+  colorCircle(ballX, ballY, 5 , 'white');
+}
+
+function colorCircle(centerX, centerY, radius, drawColor){
+  canvasContext.fillStyle = drawColor;
+  canvasContext.beginPath();
+  canvasContext.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+  canvasContext.fill();
+}
+
+function colorRect(leftX, topY, width, height, drawColor){
+  canvasContext.fillStyle = drawColor;
+  canvasContext.fillRect(leftX, topY, width, height);
+
+}
+
+</script>
+<body>
+</body>
+</html>
