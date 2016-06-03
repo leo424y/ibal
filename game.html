@@ -53,6 +53,7 @@ function calculateMousePos(evt){
   var mouseX= evt.clientX - rect.left - root.scrollLeft;
   var mouseY= evt.clientY - rect.top - root.scrollTop;
 
+  //mousehit
   if( ballX < (mouseX + 20) && ballX > (mouseX - 20) && ballY < (mouseY + 20) && ballY > (mouseY - 20) ){
     audio2.play();
     ballSpeedX+=2;
@@ -132,11 +133,11 @@ function moveEverything(){
   }
   ballX = ballX + ballSpeedX;
   ballY = ballY + ballSpeedY;
-  if(ballX > canvas.width){
+  if(ballX > canvas.width - 10){
     //hit
     if(ballY > paddle2Y && ballY < paddle2Y + PADDLE_HEIGHT){
       ballHitPaddle();
-      ballSpeedX = -ballSpeedX;
+      ballSpeedX = - ballSpeedX;
       var deltaY = ballY - (paddle2Y + PADDLE_HEIGHT/2);
       ballSpeedY = deltaY * 0.1;
     }
@@ -146,14 +147,15 @@ function moveEverything(){
       player1Score++;
     }
   }
-  if (ballX < 0) {
+  if (ballX < 10) {
     //hit
     if(ballY > paddle1Y && ballY < paddle1Y + PADDLE_HEIGHT){
       ballHitPaddle();
-      ballSpeedX = -ballSpeedX;
+      ballSpeedX = - ballSpeedX;
       var deltaY = ballY - (paddle1Y + PADDLE_HEIGHT/2);
       ballSpeedY = deltaY * 0.1;
-    }else{
+    }
+    else{
       ballReset('startRight');
       player2Score++;
     }
