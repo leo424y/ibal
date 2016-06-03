@@ -8,6 +8,12 @@
 </head>
 <script>
 
+//obstacle
+var obstacles = new Array;
+var obstacleX;
+var obstacleY;
+
+
 //point
 var myPoint = 0;
 var myPointS = 0;
@@ -194,16 +200,20 @@ function drawEverything(){
   colorRect(0,0, canvas.width, canvas.height, 'black');
   colorRect(0 ,paddle1Y,10,PADDLE_HEIGHT,'yellow');
   colorRect(canvas.width - PADDLE_THICK ,paddle2Y,10,PADDLE_HEIGHT,'red');
+  for(i=0; i < obstacles.length; i=i+2 ){
+    colorCircle(obstacles[i]+= (paddle1Y - canvas.height)*.0001 , obstacles[i+1]+= (paddle2Y - canvas.height)*.0001, 1 , 'white');
+  }
   colorCircle(ballX, ballY, ballSize , 'white');
+
+  //colorCircle(ballX - ballSpeedX, ballY - ballSpeedY , ballSize , 'red');
   canvasContext.fillText('🔢  '+ myPointS, window.innerWidth/2,window.innerHeight/2.4 );
   myPoint = hitScore*timePlayed + Math.abs(ballSpeedX);
   if(!showingWinScreen){
-  canvasContext.fillText('⏰  '+ timePlayed, window.innerWidth/2,window.innerHeight/2 );
-  canvasContext.fillText('👥  '+ hitScore, window.innerWidth/2,window.innerHeight/2.2 );
-  canvasContext.fillText('🔢  '+ myPoint, window.innerWidth/2,window.innerHeight/2.4 );
-  myPointS = myPoint;
-}
-
+    canvasContext.fillText('⏰  '+ timePlayed, window.innerWidth/2,window.innerHeight/2 );
+    canvasContext.fillText('👥  '+ hitScore, window.innerWidth/2,window.innerHeight/2.2 );
+    canvasContext.fillText('🔢  '+ myPoint, window.innerWidth/2,window.innerHeight/2.4 );
+    myPointS = myPoint;
+  }
 }
 function colorCircle(centerX, centerY, radius, drawColor){
   canvasContext.fillStyle = drawColor;
@@ -214,17 +224,15 @@ function colorCircle(centerX, centerY, radius, drawColor){
 function colorRect(leftX, topY, width, height, drawColor){
   canvasContext.fillStyle = drawColor;
   canvasContext.fillRect(leftX, topY, width, height);
-
 }
 function changeBallY(){
   ballSpeedY +=  (mouseYY - ballY)*0.0002;
 }
 
 window.onload = function(){
-  console.log(window.innerWidth, window.innerHeight);
   canvas = document.getElementById('gameCanvas');
-  gameCanvas.width = window.innerWidth;
-  gameCanvas.height = window.innerHeight;
+  gameCanvas.width = window.innerWidth*.99;
+  gameCanvas.height = window.innerHeight*.99;
   canvasContext = canvas.getContext('2d');
   setInterval(function(){
     moveEverything();
@@ -233,9 +241,17 @@ window.onload = function(){
     changeBallY();
   }, 1000/framesPerSecond);
   setInterval(function(){
+    obstacleX = Math.floor(Math.random()*window.innerWidth);
+    obstacleY = Math.floor(Math.random()*window.innerHeight);
+    obstacles.push(obstacleX,obstacleY);
+    if(timePlayed%3==0){obstacles.splice(0, 2);}
+    //console.log(obstacles);
+    //console.log(obstacles[0],obstacles[1]);
+
+
     timePlayed += 1;
     paddle2SpeedY += 6;
-    console.log(timePlayed);
+    //console.log(timePlayed);
     PADDLE_HEIGHT--;
     canvasContext.globalAlpha-=0.01;
   }, 1000);
