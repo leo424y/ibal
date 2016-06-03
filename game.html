@@ -8,6 +8,10 @@
 </head>
 <script>
 
+//point
+var myPoint = 0;
+var myPointS = 0;
+
 //audio
 var audio = new Audio('b1.wav');
 var audio1 = new Audio('b2.wav');
@@ -191,11 +195,15 @@ function drawEverything(){
   colorRect(0 ,paddle1Y,10,PADDLE_HEIGHT,'yellow');
   colorRect(canvas.width - PADDLE_THICK ,paddle2Y,10,PADDLE_HEIGHT,'red');
   colorCircle(ballX, ballY, ballSize , 'white');
+  canvasContext.fillText('🔢  '+ myPointS, window.innerWidth/2,window.innerHeight/2.4 );
+  myPoint = hitScore*timePlayed + Math.abs(ballSpeedX);
   if(!showingWinScreen){
-  canvasContext.fillText('⏰  '+timePlayed, window.innerWidth/2,window.innerHeight/2 );
-  canvasContext.fillText('👥  '+hitScore, window.innerWidth/2,window.innerHeight/2.2 );
-  canvasContext.fillText('🔢  '+hitScore*timePlayed, window.innerWidth/2,window.innerHeight/2.4 );
-  }
+  canvasContext.fillText('⏰  '+ timePlayed, window.innerWidth/2,window.innerHeight/2 );
+  canvasContext.fillText('👥  '+ hitScore, window.innerWidth/2,window.innerHeight/2.2 );
+  canvasContext.fillText('🔢  '+ myPoint, window.innerWidth/2,window.innerHeight/2.4 );
+  myPointS = myPoint;
+}
+
 }
 function colorCircle(centerX, centerY, radius, drawColor){
   canvasContext.fillStyle = drawColor;
@@ -209,7 +217,7 @@ function colorRect(leftX, topY, width, height, drawColor){
 
 }
 function changeBallY(){
-  ballSpeedY +=  (mouseYY - ballY)*0.0001;
+  ballSpeedY +=  (mouseYY - ballY)*0.0002;
 }
 
 window.onload = function(){
