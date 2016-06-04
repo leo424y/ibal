@@ -1,64 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <canvas id="gameCanvas"></canvas>
-
 <head>
   <meta charset="UTF-8">
   <title>ibal</title>
 </head>
 <script>
-
 //obstacle
 var obstacles = new Array;
 var obstacleX;
 var obstacleY;
-
-
 //point
 var myPoint = 0;
 var myPointS = 0;
-
 //audio
 var audio = new Audio('b1.wav');
 var audio1 = new Audio('b2.wav');
 var audio2 = new Audio('b3.wav');
-
 //canvas
 var canvas;
 var canvasContext;
-
 //paddle
 var paddle1Y = 250;
 var paddle2Y = 250;
 var paddle2SpeedY;
 var PADDLE_HEIGHT = 200;
 const PADDLE_THICK = 10;
-
 //paddle2YSpeed
 var paddle2YSpeed = 10;
-
 //ball
 var ballSize;
 var ballX;
 var ballY;
-
 //ballSpeed
 var ballSpeedX;
 var ballSpeedY;
-
 //information
 var showingWinScreen = false;
 var player1Score = 0;
 var player2Score = 0;
 var hitScore = 0;
 const WINNING_SCORE = 0;
-
+//mouse
 var mouseYY;
-
 //time
 var framesPerSecond = 60;
 var timePlayed = 0;
-
+//function
 function calculateMousePos(evt){
   var rect = canvas.getBoundingClientRect();
   var root = document.documentElement;
@@ -93,8 +81,6 @@ function handleMouseClick(evt){
   }
   return;
 }
-
-
 function ballHitPaddle(){
   audio.play();
   //耳不聞
@@ -149,7 +135,6 @@ function ballReset(gameResult){
     console.log('startDefault');
     break;
   }
-
 }
 function computerMovement(){
   var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2);
@@ -229,7 +214,6 @@ function colorRect(leftX, topY, width, height, drawColor){
 function changeBallY(){
   ballSpeedY +=  (mouseYY - ballY)*0.0002;
 }
-
 window.onload = function(){
   canvas = document.getElementById('gameCanvas');
   gameCanvas.width = window.innerWidth*.98;
@@ -248,8 +232,6 @@ window.onload = function(){
     if(timePlayed%3==0){obstacles.splice(0, 2);}
     //console.log(obstacles);
     //console.log(obstacles[0],obstacles[1]);
-
-
     timePlayed += 1;
     paddle2SpeedY += 6;
     //console.log(timePlayed);
