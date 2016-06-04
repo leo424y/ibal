@@ -110,6 +110,7 @@ function ballHitPaddle(){
 
   //兒女遠
   ballSize -= 0.1;
+
   //老伴衰
   paddle2YSpeed -= 0.01;
 
@@ -231,8 +232,8 @@ function changeBallY(){
 
 window.onload = function(){
   canvas = document.getElementById('gameCanvas');
-  gameCanvas.width = window.innerWidth*.99;
-  gameCanvas.height = window.innerHeight*.99;
+  gameCanvas.width = window.innerWidth*.98;
+  gameCanvas.height = window.innerHeight*.97;
   canvasContext = canvas.getContext('2d');
   setInterval(function(){
     moveEverything();
