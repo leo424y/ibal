@@ -29,6 +29,7 @@ const PADDLE_THICK = 10;
 //paddle2YSpeed
 var paddle2YSpeed = 10;
 //ball
+var ballColor = 'white';
 var ballSize;
 var ballX;
 var ballY;
@@ -220,7 +221,14 @@ function drawEverything(){
   for(i=0; i < obstacles.length; i=i+2 ){
     colorCircle(obstacles[i]+= (paddle1Y - canvas.height)*.0001 , obstacles[i+1]+= (paddle2Y - canvas.height)*.0001, 1 , getRandomColor());
   }
-  colorCircle(ballX, ballY, ballSize , 'white');
+  colorCircle(ballX, ballY, ballSize , ballColor);
+
+  //colorful ball
+  if (Math.abs(ballSpeedX)>20){ballColor=getRandomColor();}
+  //dizzy ball
+  console.log(Math.abs(ballSpeedX));
+  if (timePlayed>30){colorCircle(ballY, ballX, ballSize , ballColor);}
+
 
   //colorCircle(ballX - ballSpeedX, ballY - ballSpeedY , ballSize , 'red');
   canvasContext.fillText('🔢  '+ myPointS, window.innerWidth/2,window.innerHeight/2.4 );
