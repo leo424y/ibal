@@ -57,6 +57,26 @@ function getRandomColor() {
     }
     return color;
 }
+//random dark color
+function getRandomDarkColor() {
+    var letters = '012345678'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 8)];
+    }
+    return color;
+}
+
+//random light color
+function getRandomLightColor() {
+    var letters = '90ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 8)];
+    }
+    return color;
+}
+
 //mouse
 function calculateMousePos(evt){
   var rect = canvas.getBoundingClientRect();
@@ -196,7 +216,7 @@ function moveEverything(){
 function drawEverything(){
   colorRect(0,0, canvas.width, canvas.height, 'black');
   colorRect(0 ,paddle1Y,10,PADDLE_HEIGHT,'yellow');
-  colorRect(canvas.width - PADDLE_THICK ,paddle2Y,10,PADDLE_HEIGHT,'red');
+  colorRect(canvas.width - PADDLE_THICK ,paddle2Y,10,PADDLE_HEIGHT, getRandomLightColor());
   for(i=0; i < obstacles.length; i=i+2 ){
     colorCircle(obstacles[i]+= (paddle1Y - canvas.height)*.0001 , obstacles[i+1]+= (paddle2Y - canvas.height)*.0001, 1 , getRandomColor());
   }
@@ -236,12 +256,12 @@ window.onload = function(){
     computerMovement();
     changeBallY();
   }, 1000/framesPerSecond);
-  
+
   setInterval(function(){
     obstacleX = Math.floor(Math.random()*window.innerWidth);
     obstacleY = Math.floor(Math.random()*window.innerHeight);
     obstacles.push(obstacleX,obstacleY);
-    if(timePlayed%2==0){obstacles.splice(0, 2);}
+    if(timePlayed%2==0){obstacles.splice(0, 1);}
   }, 3000);
 
   setInterval(function(){
