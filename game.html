@@ -1,63 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <canvas id="gameCanvas"></canvas>
-
 <head>
   <meta charset="UTF-8">
   <title>ibal</title>
 </head>
 <script>
-
+//obstacle
+var obstacles = new Array;
+var obstacleX;
+var obstacleY;
+//point
+var myPoint = 0;
+var myPointS = 0;
 //audio
 var audio = new Audio('b1.wav');
 var audio1 = new Audio('b2.wav');
 var audio2 = new Audio('b3.wav');
-
 //canvas
 var canvas;
 var canvasContext;
-
 //paddle
 var paddle1Y = 250;
 var paddle2Y = 250;
 var paddle2SpeedY;
 var PADDLE_HEIGHT = 200;
 const PADDLE_THICK = 10;
-
 //paddle2YSpeed
 var paddle2YSpeed = 10;
-
 //ball
+var ballColor = 'white';
 var ballSize;
 var ballX;
 var ballY;
-
 //ballSpeed
 var ballSpeedX;
 var ballSpeedY;
-
 //information
 var showingWinScreen = false;
 var player1Score = 0;
 var player2Score = 0;
 var hitScore = 0;
 const WINNING_SCORE = 0;
-
+//mouse
+var mouseYY;
 //time
 var framesPerSecond = 60;
 var timePlayed = 0;
+//function
 
+//random color
+function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+//random dark color
+function getRandomDarkColor() {
+    var letters = '012345678'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 8)];
+    }
+    return color;
+}
+
+//random light color
+function getRandomLightColor() {
+    var letters = '90ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 8)];
+    }
+    return color;
+}
+
+//mouse
 function calculateMousePos(evt){
   var rect = canvas.getBoundingClientRect();
   var root = document.documentElement;
   var mouseX= evt.clientX - rect.left - root.scrollLeft;
   var mouseY= evt.clientY - rect.top - root.scrollTop;
-
+  mouseYY = mouseY;
+  //mousehit changing
   if( ballX < (mouseX + 20) && ballX > (mouseX - 20) && ballY < (mouseY + 20) && ballY > (mouseY - 20) ){
     audio2.play();
-    ballSpeedX+=2;
-    ballSpeedY+=2;
+    ballSpeedX*=1.1;
+    ballSpeedY*=1.1;
 
+    //眼有神
+    if(canvasContext.globalAlpha<0.9 && canvasContext.globalAlpha>0.1 ){
+      canvasContext.globalAlpha += 0.1;
+    }
+    //耳可聞
+    if(audio.volume < 0.9){
+      audio.volume += 0.1;
+    }
   }
 
   return{
@@ -68,30 +109,41 @@ function calculateMousePos(evt){
 function handleMouseClick(evt){
   if(showingWinScreen){
     showingWinScreen = false;
+    hitScore = 0;
   }
   return;
 }
-
-
 function ballHitPaddle(){
   audio.play();
+  //耳不聞
+  if(audio.volume>0.1){
+    audio.volume-=0.05;
+  }
+  //眼盲盲
+  if(canvasContext.globalAlpha<1.01 && canvasContext.globalAlpha>0.1 ){
+    canvasContext.globalAlpha--;
+  }
+  //成就升
   hitScore++;
-  ballSpeedX++;
-  ballSpeedY++;
-  ballSize-=0.1;
-  paddle2YSpeed-=0.01;
+
+  //兒女遠
+  ballSize -= 0.1;
+
+  //老伴衰
+  paddle2YSpeed -= 0.01;
+
 }
 function ballReset(gameResult){
+  ballColor = 'white';
+  canvasContext.globalAlpha=1;
   ballSize = 20;
   ballX = 50;
   ballY = 150;
   PADDLE_HEIGHT = 200;
-  hitScore = 0;
   if(player1Score>=WINNING_SCORE || player2Score>=WINNING_SCORE){
     player1Score = 0;
     player2Score = 0;
     showingWinScreen = true;
-
   }
   timePlayed=0;
   ballX = canvas.width/2;
@@ -116,7 +168,6 @@ function ballReset(gameResult){
     console.log('startDefault');
     break;
   }
-
 }
 function computerMovement(){
   var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2);
@@ -132,11 +183,11 @@ function moveEverything(){
   }
   ballX = ballX + ballSpeedX;
   ballY = ballY + ballSpeedY;
-  if(ballX > canvas.width){
+  if(ballX > canvas.width - 10){
     //hit
     if(ballY > paddle2Y && ballY < paddle2Y + PADDLE_HEIGHT){
       ballHitPaddle();
-      ballSpeedX = -ballSpeedX;
+      ballSpeedX = - ballSpeedX;
       var deltaY = ballY - (paddle2Y + PADDLE_HEIGHT/2);
       ballSpeedY = deltaY * 0.1;
     }
@@ -150,10 +201,11 @@ function moveEverything(){
     //hit
     if(ballY > paddle1Y && ballY < paddle1Y + PADDLE_HEIGHT){
       ballHitPaddle();
-      ballSpeedX = -ballSpeedX;
+      ballSpeedX = - ballSpeedX +1;
       var deltaY = ballY - (paddle1Y + PADDLE_HEIGHT/2);
       ballSpeedY = deltaY * 0.1;
-    }else{
+    }
+    else{
       ballReset('startRight');
       player2Score++;
     }
@@ -165,11 +217,30 @@ function moveEverything(){
 }
 function drawEverything(){
   colorRect(0,0, canvas.width, canvas.height, 'black');
-  colorRect(0 ,paddle1Y,10,PADDLE_HEIGHT,'yellow');
-  colorRect(canvas.width - PADDLE_THICK ,paddle2Y,10,PADDLE_HEIGHT,'red');
-  colorCircle(ballX, ballY, ballSize , 'white');
-  canvasContext.fillText(timePlayed, window.innerWidth/2,window.innerHeight/2 );
-  canvasContext.fillText(hitScore, window.innerWidth/2,window.innerHeight/2.2 );
+  colorRect(0 ,paddle1Y,10,PADDLE_HEIGHT,'white');
+  colorRect(canvas.width - PADDLE_THICK ,paddle2Y,10,PADDLE_HEIGHT, 'white');
+  //畫星星
+  for(i=0; i < obstacles.length; i=i+2 ){
+    colorCircle(obstacles[i]+= (paddle1Y - canvas.height)*.0001 , obstacles[i+1]+= (paddle2Y - canvas.height)*.0001, 1 , "getRandomColor()");
+  }
+  colorCircle(ballX, ballY, ballSize , ballColor);
+
+  //colorful ball
+  if (Math.abs(ballSpeedX)>20){ballColor=getRandomColor();}
+  //dizzy ball
+  if (timePlayed>30){colorCircle(ballY, ballX, ballSize , ballColor);}
+
+
+  //colorCircle(ballX - ballSpeedX, ballY - ballSpeedY , ballSize , 'red');
+  canvasContext.fillText('🔢  '+ myPointS, window.innerWidth/2,window.innerHeight/2.4 );
+  myPoint = hitScore*timePlayed + Math.abs(Math.floor(ballSpeedX));
+  if(!showingWinScreen){
+    canvasContext.fillText('⏰  '+ timePlayed, window.innerWidth/2,window.innerHeight/2 );
+    canvasContext.fillText('👥  '+ hitScore, window.innerWidth/2,window.innerHeight/2.2 );
+    canvasContext.fillText('🔢  '+ myPoint, window.innerWidth/2,window.innerHeight/2.4 );
+    myPointS = myPoint;
+
+  }
 }
 function colorCircle(centerX, centerY, radius, drawColor){
   canvasContext.fillStyle = drawColor;
@@ -180,33 +251,44 @@ function colorCircle(centerX, centerY, radius, drawColor){
 function colorRect(leftX, topY, width, height, drawColor){
   canvasContext.fillStyle = drawColor;
   canvasContext.fillRect(leftX, topY, width, height);
-
 }
-
+function changeBallY(){
+  ballSpeedY +=  (mouseYY - ballY)*0.0002;
+}
 window.onload = function(){
-  console.log(window.innerWidth, window.innerHeight);
   canvas = document.getElementById('gameCanvas');
-  gameCanvas.width = window.innerWidth;
-  gameCanvas.height = window.innerHeight;
+  gameCanvas.width = window.innerWidth*.98;
+  gameCanvas.height = window.innerHeight*.97;
   canvasContext = canvas.getContext('2d');
   setInterval(function(){
     moveEverything();
     drawEverything();
     computerMovement();
+    changeBallY();
   }, 1000/framesPerSecond);
+
   setInterval(function(){
-    timePlayed+=1;
-    paddle2SpeedY+=6;
-    console.log(timePlayed);
+    obstacleX = Math.floor(Math.random()*window.innerWidth);
+    obstacleY = Math.floor(Math.random()*window.innerHeight);
+    obstacles.push(obstacleX,obstacleY);
+    if(timePlayed%2==0){obstacles.splice(0, 1);}
+  }, 3000);
+
+  setInterval(function(){
+
+
+    timePlayed += 1;
+    paddle2SpeedY += 6;
+    //console.log(timePlayed);
     PADDLE_HEIGHT--;
+    canvasContext.globalAlpha-=0.01;
   }, 1000);
   canvas.addEventListener('mousedown', handleMouseClick)
   canvas.addEventListener('mousemove',
-    function(evt){
-      var mousePos = calculateMousePos(evt);
-      paddle1Y = mousePos.y - PADDLE_HEIGHT/2;
-      //paddle2Y = mousePos.y - PADDLE_HEIGHT/2;
-    });
+  function(evt){
+    var mousePos = calculateMousePos(evt);
+    paddle1Y = mousePos.y - PADDLE_HEIGHT/2;
+  });
   ballReset();
 }
 </script>
