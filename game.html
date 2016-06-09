@@ -85,11 +85,11 @@ function calculateMousePos(evt){
   var mouseX= evt.clientX - rect.left - root.scrollLeft;
   var mouseY= evt.clientY - rect.top - root.scrollTop;
   mouseYY = mouseY;
-  //mousehit
+  //mousehit changing
   if( ballX < (mouseX + 20) && ballX > (mouseX - 20) && ballY < (mouseY + 20) && ballY > (mouseY - 20) ){
     audio2.play();
-    ballSpeedX+=2;
-    ballSpeedY+=2;
+    ballSpeedX*=1.1;
+    ballSpeedY*=1.1;
 
     //眼有神
     if(canvasContext.globalAlpha<0.9 && canvasContext.globalAlpha>0.1 ){
@@ -134,6 +134,7 @@ function ballHitPaddle(){
 
 }
 function ballReset(gameResult){
+  ballColor = 'white';
   canvasContext.globalAlpha=1;
   ballSize = 20;
   ballX = 50;
@@ -216,28 +217,29 @@ function moveEverything(){
 }
 function drawEverything(){
   colorRect(0,0, canvas.width, canvas.height, 'black');
-  colorRect(0 ,paddle1Y,10,PADDLE_HEIGHT,'yellow');
-  colorRect(canvas.width - PADDLE_THICK ,paddle2Y,10,PADDLE_HEIGHT, getRandomLightColor());
+  colorRect(0 ,paddle1Y,10,PADDLE_HEIGHT,'white');
+  colorRect(canvas.width - PADDLE_THICK ,paddle2Y,10,PADDLE_HEIGHT, 'white');
+  //畫星星
   for(i=0; i < obstacles.length; i=i+2 ){
-    colorCircle(obstacles[i]+= (paddle1Y - canvas.height)*.0001 , obstacles[i+1]+= (paddle2Y - canvas.height)*.0001, 1 , getRandomColor());
+    colorCircle(obstacles[i]+= (paddle1Y - canvas.height)*.0001 , obstacles[i+1]+= (paddle2Y - canvas.height)*.0001, 1 , "getRandomColor()");
   }
   colorCircle(ballX, ballY, ballSize , ballColor);
 
   //colorful ball
   if (Math.abs(ballSpeedX)>20){ballColor=getRandomColor();}
   //dizzy ball
-  console.log(Math.abs(ballSpeedX));
   if (timePlayed>30){colorCircle(ballY, ballX, ballSize , ballColor);}
 
 
   //colorCircle(ballX - ballSpeedX, ballY - ballSpeedY , ballSize , 'red');
   canvasContext.fillText('🔢  '+ myPointS, window.innerWidth/2,window.innerHeight/2.4 );
-  myPoint = hitScore*timePlayed + Math.abs(ballSpeedX);
+  myPoint = hitScore*timePlayed + Math.abs(Math.floor(ballSpeedX));
   if(!showingWinScreen){
     canvasContext.fillText('⏰  '+ timePlayed, window.innerWidth/2,window.innerHeight/2 );
     canvasContext.fillText('👥  '+ hitScore, window.innerWidth/2,window.innerHeight/2.2 );
     canvasContext.fillText('🔢  '+ myPoint, window.innerWidth/2,window.innerHeight/2.4 );
     myPointS = myPoint;
+
   }
 }
 function colorCircle(centerX, centerY, radius, drawColor){
