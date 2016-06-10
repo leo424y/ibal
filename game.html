@@ -243,7 +243,6 @@ function drawEverything(){
   //dizzy ball
   if (timePlayed>30){colorCircle(ballY, ballX, ballSize , ballColor);}
 
-
   //colorCircle(ballX - ballSpeedX, ballY - ballSpeedY , ballSize , 'red');
   canvasContext.fillText('🔢  '+ myPointS, window.innerWidth/2,window.innerHeight/2.4 );
   myPoint = hitScore*timePlayed + Math.abs(Math.floor(ballSpeedX));
@@ -295,6 +294,9 @@ window.onload = function(){
     //console.log(timePlayed);
     PADDLE_HEIGHT--;
     canvasContext.globalAlpha-=0.01;
+
+    //眼矇矓
+    if(ballSize>5){ballSize-=0.01;}
   }, 1000);
 
   //canvas.addEventListener("touchstart", draw, false);
